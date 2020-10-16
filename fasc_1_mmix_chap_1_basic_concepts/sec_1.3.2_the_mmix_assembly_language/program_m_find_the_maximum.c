@@ -40,14 +40,22 @@ int Maximum(const int64_t* X, const uint64_t n, int64_t* m, uint64_t* j)
   if( X == NULL || n == 0)
     return -1;
 
-  *j = n;
+
+  *j = n;                  // M1 [Initialize] j <- n, m <- X[n]
   *m = X[n];
 
-  for(uint64_t k = n; k != 0; --k) {
-    if(X[k] <= *m)
-      continue;
-    *m = X[k];
-    *j = k;
+  for(
+      uint64_t k = n - 1;  // k <- n - 1
+      k != 0;              // M2 [All tested?] To M3 if k != 0
+      --k                  // M5 [ Decrease k] k <- k - 1
+      ) {
+
+    if(X[k] <= *m)         // M3 [Compare]
+      continue;            // To M5 if X[k] <= m
+
+    *m = X[k];             // M4 [Change m] m <- X[k]
+    *j = k;                // j <- k
+
   }
 
   return 0;
