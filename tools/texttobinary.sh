@@ -39,7 +39,7 @@ while IFS+=, read -a vals; do
     val=${vals[i]}
 
 # printf output is 64-bit bigendian
-#printf "0x%.2x" -7 prints 0xfffffffffffffff9
+# printf "0x%.2x" -7 prints 0xfffffffffffffff9
     printf -vhex "%.${len}x" $val
 
 # truncate sign extension from right for 64-bit negative numbers past maximum length eg -7 should be 0xfffffff9 for 4 bytes
