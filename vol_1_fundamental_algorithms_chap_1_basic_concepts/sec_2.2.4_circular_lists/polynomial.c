@@ -25,6 +25,17 @@ void polynomial_init(struct Term* p)
   p->LINK = NULL;
 }
 
+void polynomial_clear(struct Term* P)
+{
+
+  for(struct Term* p = P->LINK; p->ABC != -1;) {
+    struct Term* prev = p;
+    p = p->LINK;
+    free(prev);
+  }
+
+}
+
 void polynomial_write(const struct Term* P, FILE* out)
 {
   for(const struct Term* p = P->LINK; p->ABC != -1; p = p->LINK) {
