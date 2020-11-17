@@ -89,6 +89,12 @@ int Add(const struct Term* P, struct Term* Q)
 
 }
 
+void cleanup(struct Term* P, struct Term* Q)
+{
+  polynomial_clear(P);
+  polynomial_clear(Q);
+}
+
 int main(int argc, char* argv[])
 {
 
@@ -96,13 +102,19 @@ int main(int argc, char* argv[])
   struct Term Q = {NULL, -1, 0};
 
   struct Term* polys[] = {&P, &Q};
-  if(get_polynomials(stdin, polys, 2) != 0)
+  if(get_polynomials(stdin, polys, 2) != 0) {
+    cleanup(&P, &Q);
     return 1;
+  }
 
-  if(Add(&P, &Q) != 0)
+  if(Add(&P, &Q) != 0) {
+    cleanup(&P, &Q);
     return 2;
+  }
 
   polynomial_write(&Q, stdout);
+
+  cleanup(&P, &Q);
 
   return 0;
 }

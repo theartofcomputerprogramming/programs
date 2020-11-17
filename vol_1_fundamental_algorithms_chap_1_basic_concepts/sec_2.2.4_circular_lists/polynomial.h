@@ -20,6 +20,7 @@ struct Term {
 
 int get_polynomials(FILE* in, struct Term* polys[], uint32_t npolys);
 void polynomial_write(const struct Term* P, FILE* out);
+void polynomial_clear(struct Term* P);
 
 #endif
 
