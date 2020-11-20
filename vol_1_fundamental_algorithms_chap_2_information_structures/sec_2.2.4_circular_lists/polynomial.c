@@ -25,6 +25,7 @@ void polynomial_init(struct Term* p)
   p->LINK = NULL;
 }
 
+// not as nice as the simple erase described in TAOCP 2.2.4 because each node is separately malloced
 void polynomial_clear(struct Term* P)
 {
 
