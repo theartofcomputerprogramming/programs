@@ -9,6 +9,7 @@
 // usage: algorithm_a_addition_of_polynomials <in.dat >out.dat
 // reads two polynomials as binary data on stdin
 // format for each polynomial is sequence of terms terminated by single int64_t zero
+// terms are in decreasing order by exponent field
 // each term is int64_t coefficient followed by single int64_t for the exponents of the four variables in the term
 // each exponent uses 2 bytes except the first exponent which is allowed only 15 bits of the 2 high bytes excluding the high sign bit
 // examples:
