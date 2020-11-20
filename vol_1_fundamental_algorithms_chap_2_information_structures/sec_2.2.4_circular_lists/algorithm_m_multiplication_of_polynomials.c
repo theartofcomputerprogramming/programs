@@ -4,7 +4,7 @@
 // The Art of Computer Programming, Donald Knuth
 
 // usage: algorithm_m_multiplication_of_polynomials <in.dat >out.dat
-// reads two polynomials as binary data on stdin
+// reads three polynomials as binary data on stdin
 // format for each polynomial is sequence of terms terminated by single int64_t zero
 // each term is int64_t coefficient followed by single int64_t for the exponents of the four variables in the term
 // each exponent uses 2 bytes except the first exponent which is allowed only 15 bits of the 2 high bytes excluding the high sign bit
@@ -128,6 +128,7 @@ int Mult(struct Term* Q, const struct Term* M,  const struct Term* P)
 void cleanup(struct Term* Q, struct Term* M, struct Term* P)
 {
   polynomial_clear(P);
+  polynomial_clear(M);
   polynomial_clear(Q);
 }
 
