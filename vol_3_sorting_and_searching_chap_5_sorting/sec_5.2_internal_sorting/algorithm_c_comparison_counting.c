@@ -4,24 +4,39 @@
 // 5.2 Internal sorting
 // The Art of Computer Programming, Donald Knuth
 
+#include "algorithm_c_comparison_counting.h"
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 
-// usage: algorithm_c_comparison_counting <in.dat >out.dat
-// reads 64-bit values to sort as binary data, outputs 64-bit counts as binary data
-// first uint64_t is number of values to sort
-// next that many int64_t is data to sort
+#ifdef ALGORITHM_C_COMPARISON_COUNTING_BUILD_MAIN
+static void usage()
+{
+  puts("usage: algorithm_c_comparison_counting <in.dat >out.dat");
 
-// binary input data format
-// uint64_t N
-// int64_t[N] data
+  puts("reads 64-bit values as binary data to sort, outputs 64-bit counts/ranks as binary data");
 
-// examples:
-// algorithm_c_comparison_counting <data/algorithm_c_comparison_counting/in.0.le.dat | od -An -td8 -w8 -v
+  puts("first uint64_t is number of values to sort");
+  puts("next that many int64_t is data to sort");
 
+  puts("");
+  puts("binary input data format");
+  puts("uint64_t N");
+  puts("int64_t[N] data");
+
+  puts("");
+  puts("binary output data format");
+  puts("uint64_t N");
+  puts("int64_t[N] sorted data");
+
+  puts("");
+  puts("examples:");
+  puts("algorithm_c_comparison_counting <data/algorithm_c_comparison_counting/in.0.le.dat | od -An -td8 -w8 -v");
+}
+#endif
 
 // Sort implements Algorithm C
 // Sort takes array K of N elements
@@ -57,6 +72,10 @@ void Sort(const int64_t K[], uint64_t COUNT[], const uint64_t N)
 
 int main(int argc, char* argv[])
 {
+  if(argc > 1) {
+    usage();
+    exit(0);
+  }
 
 // read 64-bit size of data array as binary data
   uint64_t N;
@@ -72,6 +91,9 @@ int main(int argc, char* argv[])
 
 // fill COUNT array
   Sort(K, COUNT, N);
+
+// write number of values to follow
+  fwrite(&N, sizeof N, 1, stdout);
 
 // print COUNT array as binary data
   fwrite(&COUNT[1], sizeof(*COUNT), N, stdout);
