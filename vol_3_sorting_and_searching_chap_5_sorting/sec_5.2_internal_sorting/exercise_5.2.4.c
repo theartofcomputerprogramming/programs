@@ -12,21 +12,32 @@
 
 #include "algorithm_c_comparison_counting.h"
 
-// usage: exercise_5.2.4 <in.dat >out.dat
-// reads 64-bit values to sort as binary data, outputs sorted 64-bit values as binary data
-// first uint64_t is number of values to sort
-// next that many int64_t is data to sort
+static void usage()
+{
+  puts("usage: exercise_5.2.4 <in.dat >out.dat");
 
-// binary input data format
-// uint64_t N
-// int64_t[N] data
+  puts("reads 64-bit values as binary data to sort, outputs sorted 64-bit values as binary data");
 
-// examples:
-// exercise_5.2.4 <data/exercise_5.2.4/in.0.le.dat | od -An -td8 -w8 -v
+  puts("first uint64_t is number of values to sort");
+  puts("next that many int64_t is data to sort");
 
+  puts("");
+  puts("binary input data format");
+  puts("uint64_t N");
+  puts("int64_t[N] data");
+
+  puts("");
+  puts("binary output data format");
+  puts("uint64_t N");
+  puts("int64_t[N] sorted data");
+
+  puts("");
+  puts("examples:");
+  puts("exercise_5.2.4 <data/exercise_5.2.4/in.0.le.dat | od -An -td8 -w8 -v");
+}
 
 // Finish is a solution to exercise 5.2.4
-// Finish takes arrays K of keys and COUNT of rankings of the keys and fills the array OUTPUT with the sorted keys from K
+// Finish takes arrays K of keys and COUNT of rankings of the keys and fills array OUTPUT with sorted keys from K
 // all arrays are 1-indexed
 void Finish(const int64_t K[], const uint64_t COUNT[], const uint64_t N, int64_t OUTPUT[N])
 {
@@ -39,6 +50,10 @@ void Finish(const int64_t K[], const uint64_t COUNT[], const uint64_t N, int64_t
 
 int main(int argc, char* argv[])
 {
+  if(argc > 1) {
+    usage();
+    exit(0);
+  }
 
 // read 64-bit size of data array as binary data
   uint64_t N;
@@ -58,6 +73,9 @@ int main(int argc, char* argv[])
 // use COUNT array to fill sorted array OUTPUT
   int64_t OUTPUT[N + 1];
   Finish(K, COUNT, N, OUTPUT);
+
+// write number of values to follow
+  fwrite(&N, sizeof N, 1, stdout);
 
 // print OUTPUT array as binary data
   fwrite(&OUTPUT[1], sizeof(*OUTPUT), N, stdout);
