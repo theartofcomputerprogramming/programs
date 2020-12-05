@@ -52,7 +52,7 @@ void Sort(const uint64_t N, int64_t K_[N])
 // S2 [Set up i, K, R] i <- j - 1, K <- K_j
       i = j - 1, K = K_[j];
 
-// S3 [Compare K:K_i] To S3 if i > 0
+// S4 [Move R_i, decrease i] To S3 if i > 0
       i > 0;
 
 // S4 [Move R_i, decrease i] i <- i - 1
