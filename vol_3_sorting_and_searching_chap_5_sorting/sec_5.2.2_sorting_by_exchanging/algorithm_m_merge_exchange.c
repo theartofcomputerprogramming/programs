@@ -47,7 +47,7 @@ void Sort(const uint64_t N, int64_t K[N + 1])
     return;
   }
 
-// M1 [Initialize p] t = ceil(lg N)
+// M1 [Initialize p] t <- ceil(lg N)
   uint64_t t = ceil(log2(N));
 
 // loop on p over powers of 2 from 2^(t - 1) down to 1
