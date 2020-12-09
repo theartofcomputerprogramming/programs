@@ -80,7 +80,6 @@ void Sort(const uint64_t N, int64_t K[N + 1])
     ) {
 
 // loop on i from start of array upto index that allows comparisons of pairs that are d-apart
-// this makes bigger keys bubble d indexes at a time unlike basic bubblesort in which bigger keys move 1 index at a time
 
 // M3 [Loop on i] Perform M4 for 0 <= i < N - d and i & p = r
       for(uint64_t i = 0; i < N - d; ++i) {
