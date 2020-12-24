@@ -17,22 +17,22 @@ static void usage()
 {
   puts("usage:algorithm_r_radix_exchange_sort.recursive <in.dat >out.dat");
 
-  puts("reads 64-bit values as binary data to sort, outputs sorted 64-bit values as binary data");
+  puts("reads nonnegative 64-bit values as binary data to sort, outputs sorted 64-bit values as binary data");
 
   puts("first uint64_t is max number of bits needed for values");
   puts("second uint64_t is number of values to sort");
-  puts("next that many int64_t is data to sort");
+  puts("next that many uint64_t is data to sort");
 
   puts("");
   puts("binary input data format");
   puts("uint64_t m");
   puts("uint64_t N");
-  puts("int64_t[N] data");
+  puts("uint64_t[N] data");
 
   puts("");
   puts("binary output data format");
   puts("uint64_t N");
-  puts("int64_t[N] sorted data");
+  puts("uint64_t[N] sorted data");
 
   puts("");
   puts("examples:");
@@ -141,7 +141,8 @@ static uint64_t R2Stage(uint64_t l, uint64_t r, uint64_t b, const uint64_t N, ui
 void Sort(const uint64_t N, uint64_t K[N + 1], const uint64_t m)
 {
 
-// R1 [initialize]
+// R1 [initialize] Set the stack empty, l <- 1, r <- N, b <- 1
+// recursion stack is empty
   const uint64_t l = 1;
   const uint64_t r = N;
   const uint64_t b = 1ul << (m - 1);

@@ -75,7 +75,10 @@ static void straight_insertion_sort(const uint64_t N, int64_t K_[N+1])
 static void Q2Stage(uint64_t l, uint64_t r, const uint64_t N, int64_t K_[N + 2], const uint64_t M)
 {
 
-// runs while partitions are bigger than M
+// Q8 [Take off stack] To Q2, (l', r'0 <= stack if stack nonempty, l <- l', r <- r'
+// step Q8 same as step Q2 due to recursion
+
+// runs while partitions are longer than M
 // terminates by break below
   for(;;) {
 
@@ -124,8 +127,8 @@ static void Q2Stage(uint64_t l, uint64_t r, const uint64_t N, int64_t K_[N + 2],
 // Q7 [Put on stack] To Q2, (j + 1, r) => stack, r <- j - 1 if r - j >= j - l > M
     if(r - j >= j - l && j - l > M) {
 // right partition is longer, recursively partition it
+// step Q8 happens inside recursive call to Q2Stage
       Q2Stage(j + 1, r, N, K_, M);
-// move current right boundary down
 // move right boundary down and continue working on current partition
       r = j - 1;
       continue;
@@ -134,16 +137,20 @@ static void Q2Stage(uint64_t l, uint64_t r, const uint64_t N, int64_t K_[N + 2],
 // Q7 [Put on stack] To Q2, (l, j - 1) => stack, l <- j + 1 if j - l > r - j > M
     if(j - l > r - j && r - j > M) {
 // left partition is longer, recursively partition it
+// step Q8 happens inside recursive call to Q2Stage
       Q2Stage(l, j - 1, N, K_, M);
 // move left boundary up and continue working on current partition
       l = j + 1;
       continue;
     }
 
+// one partition is shorter than threshold length for insertion sort
+// only continue to work on the other partition
+
 // Q7 [Put on stack] To Q2, l <- j + 1 if r - j > M >= j - l
 // left partition is shorter than threshold length
     if(r - j > M && M >= j - l) {
-// move left boundary up and continue working on current partition
+// move left boundary up and continue working on right partition
       l = j + 1;
       continue;
     }
@@ -151,12 +158,12 @@ static void Q2Stage(uint64_t l, uint64_t r, const uint64_t N, int64_t K_[N + 2],
 // Q7 [Put on stack] To Q2, r <- j - 1 if j - l > M >= r - j
 // right partition is shorter than threshold length
     if(j - l > M && M >= r - j) {
-// move right boundary down and continue working on current partition
+// move right boundary down and continue working on left partition
       r = j - 1;
       continue;
     }
 
-// both partitions are shorter than threshold
+// both partitions are shorter than threshold length for insertion sort
     break;
   }
 
@@ -169,7 +176,7 @@ static void Q2Stage(uint64_t l, uint64_t r, const uint64_t N, int64_t K_[N + 2],
 void Sort(const uint64_t N, int64_t K[N + 2])
 {
 
-// threshold length for insertion sort
+// threshold length to switch to insertion sort
   const uint64_t M = 12;
 
 // Q1 [Initialize] To Q9 if N <= M
@@ -179,14 +186,17 @@ void Sort(const uint64_t N, int64_t K[N + 2])
     return;
   }
 
-// Q1 [Initialize] l <- !, r <- N
+// Q1 [Initialize] l <- 1, r <- N
   const uint64_t l = 1;
   const uint64_t r = N;
 
 // Q2 [Begin new stage]
   Q2Stage(l, r, N, K, M);
 
+// array has now been partitioned around various pivots
+
 // Q9 [Straight insertion sort]
+// sort entire array with insertion sort
   straight_insertion_sort(N, K);
 
 }
