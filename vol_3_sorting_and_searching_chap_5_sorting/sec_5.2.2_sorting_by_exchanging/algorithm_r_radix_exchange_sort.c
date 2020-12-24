@@ -17,32 +17,35 @@
 // this is why there is no need to keep the left boundary of a partition
 // in the entry stored on the stack
 
-// one stage of the algorithm scans a partition first rightward from the left then leftward from the right looking for pairs of keys to swap
+// one stage of the algorithm scans a partition first rightward from the left
+// then leftward from the right looking for pairs of keys to swap
 // each key is tested for a specific bit number in one stage
 // a key with a 1 bit found in the scan from the left is swapped with a key
 // with a 0 bit found in the scan from the right
-// i.e. goal is to keep smaller keys (0 bit) on the left and bigger keys (1 bit) on the right splitting the partition into two sections
+// i.e. goal is to keep smaller keys (0 bit) on the left and bigger keys (1 bit)
+// on the right splitting the partition into two sections
+// so a stage corresponds to a current partition and specific bit number to test
 
 static void usage()
 {
   puts("usage:algorithm_r_radix_exchange_sort <in.dat >out.dat");
 
-  puts("reads 64-bit values as binary data to sort, outputs sorted 64-bit values as binary data");
+  puts("reads nonegative 64-bit values as binary data to sort, outputs sorted 64-bit values as binary data");
 
   puts("first uint64_t is max number of bits needed for values");
   puts("second uint64_t is number of values to sort");
-  puts("next that many int64_t is data to sort");
+  puts("next that many uint64_t is data to sort");
 
   puts("");
   puts("binary input data format");
   puts("uint64_t m");
   puts("uint64_t N");
-  puts("int64_t[N] data");
+  puts("uint64_t[N] data");
 
   puts("");
   puts("binary output data format");
   puts("uint64_t N");
-  puts("int64_t[N] sorted data");
+  puts("uint64_t[N] sorted data");
 
   puts("");
   puts("examples:");
@@ -66,7 +69,7 @@ struct entry_t {
 void Sort(const uint64_t N, uint64_t K[N + 1], const uint64_t m)
 {
 
-// R1 [initialize]
+// R1 [initialize] Set the stack empty, l <- 1, r <- N, b <- 1
 
 // stack of partition entries of size m - 1 according to algorithm
   const uint64_t STACK_MAX = m - 1;
@@ -159,6 +162,7 @@ void Sort(const uint64_t N, uint64_t K[N + 1], const uint64_t m)
 // R9 [Put on stack] (r, b) => stack, to R2 with r <- j
 // abort on stack overflow
       if(++STACK_SIZE >= STACK_MAX) {
+        fprintf(stderr, "Unexpected stack overflow, is input data valid? Or there's a serious bug in the program!\n");
         abort();
       }
       stack[STACK_SIZE - 1] = (struct entry_t){r, b};
