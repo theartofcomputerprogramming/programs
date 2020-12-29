@@ -56,6 +56,9 @@ static void usage()
 void Sort(const uint64_t N; int64_t K[2*N + 1], const uint64_t N)
 {
 
+  if(N == 0)
+    return;
+
 // N1 [Initialize] s <- 0
   uint8_t s = 0;
 
