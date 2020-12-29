@@ -13,7 +13,7 @@
 // very similar to algorithm n natural two-way merge sort
 // runs here are determined artificially using the fact that merging two
 // runs of equal length results in a run double the length
-// so runs are simply assumed to start at length 1 and doubled with
+// so runs are simply assumed to start with length 1 and doubled with
 // every pass through the source array
 // when run length crosses the size of the array we know we're done
 // source and output arrays works exactly the same as algorithm n
@@ -49,6 +49,9 @@ static void usage()
   puts("algorithm_s_straight_two_way_merge_sort <data/algorithm_s_straight_two_way_merge_sort/in.0.le.dat | od -An -td8 -w8 -v");
 }
 
+// Sort takes array K of N elements beginning at K[1]
+// Sort implements Algorithm S (Straight two-way merge sort)
+// K is sorted in place
 void Sort(const uint64_t N; int64_t K[2*N + 1], const uint64_t N)
 {
 
@@ -106,14 +109,24 @@ void Sort(const uint64_t N; int64_t K[2*N + 1], const uint64_t N)
 // loop over one area till left and right pointers cross
     for(;;) {
 
-// need this to simulate goto S12 in algorithm
+// need this to simulate goto S12 from S7 in algorithm
       bool goto_s12_switch_sides;
-// need this to simulate goto S13 in algorithm
-      bool goto_s13_switch_areas;
 
 // S3 [Compare K_i:K_j] To S8 if K_i > K_j
-// loop to merge smaller keys from left side
-      for(; K[i] <= K[j];) {
+      if(K[i] > K[j]) {
+
+// S8 [Transmit R_j] k <- k + d, R_k <- R_j
+        k += d;
+        K[k] = K[j];
+
+// S9 [End of run?] j <- j - 1, r <- r - 1
+        --j;
+        --r;
+// S9 [End of run?] To S3 if r > 0
+        if(r > 0)
+          continue;
+
+      } else {
 
 // S4 [Transmit R_i] k <- k + d, R_k <- R_i
 // emit smaller key from left run to output area
@@ -134,10 +147,7 @@ void Sort(const uint64_t N; int64_t K[2*N + 1], const uint64_t N)
 
 // S6 [Transmit R_j] To S13 if k = l, k <- k + d
 // loop over run on right side
-        for(
-          k += d, goto_s12_switch_sides = false, goto_s13_switch_areas = false;
-          k != l;
-          k += d) {
+        for(k += d, goto_s12_switch_sides = false; k != l; k += d) {
 
 // S6 [Transmit R_j] R_k <- R_j
           K[k] = K[j];
@@ -157,37 +167,13 @@ void Sort(const uint64_t N; int64_t K[2*N + 1], const uint64_t N)
 
         }
 
-        if(k == l) {
-// set flag for double loop break
-          goto_s13_switch_areas = true;
-        }
-        break;
+// S6 [Transmit R_j] To S13 if k = l
+        if(k == l)
+          break;
 
       }
 
-// double loop break
-      if(goto_s13_switch_areas) {
-        goto_s13_switch_areas = false;
-        break;
-      }
-
-// previous loop above can terminate from guard or from break
-// this block should be entered only when loop terminated by guard
-      if(!goto_s12_switch_sides) {
-// S8 [Transmit R_j] k <- k + d, R_k <- R_j
-        k += d;
-        K[k] = K[j];
-
-// S9 [End of run?] j <- j - 1, r <- r - 1
-        --j;
-        --r;
-// S9 [End of run?] To S3 if r > 0
-        if(r > 0)
-          continue;
-
-      }
-
-// extra copy of S12 so it can run directly after S7 or as part of S10-S12 loop
+// extra copy of S12 so it can run directly after S7 and as part of S10-S12 loop below
       if(goto_s12_switch_sides) {
         goto_s12_switch_sides = false;
 // S12 [Switch sides] q <- p, r <- p, d <- -d, k <-> l
@@ -239,6 +225,7 @@ void Sort(const uint64_t N; int64_t K[2*N + 1], const uint64_t N)
 // output area pointers crossed, time to switch areas
       if(k == l)
         break;
+
     }
 
 // S13 [Switch areas] p <- p + p
@@ -246,12 +233,12 @@ void Sort(const uint64_t N; int64_t K[2*N + 1], const uint64_t N)
     p += p;
 
 // S13 [Switch areas] Sorting is complete
-    if(p >= N) {
+    if(p >= N)
       break;
-    }
 
 // S13 [Switch areas] To S2, s <- 1 - s if p < N
     s = 1 - s;
+
   }
 
 // S13 [Switch areas] Sorting is complete
