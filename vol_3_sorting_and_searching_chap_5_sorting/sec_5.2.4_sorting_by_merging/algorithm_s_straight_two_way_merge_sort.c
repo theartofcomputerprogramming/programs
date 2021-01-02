@@ -21,8 +21,8 @@
 // the difference is that sides are switched based on current run length
 // instead of coming across a stepdown in the run
 
-// this c implementation introduces two variables to simulate couple gotos
-// with loop structures
+// this c implementation introduces one variable to simulate a goto
+// within loop structures
 
 static void usage()
 {
