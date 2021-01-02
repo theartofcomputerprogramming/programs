@@ -104,7 +104,7 @@ void Sort(const uint64_t N; int64_t K[2*N + 1], const uint64_t N)
 
 // N3 [Compare K_i:K_j] To N8 if K_i > K_j
 // look for smaller key from right run
-      for(; K[i] > K[j];) {
+      if(K[i] > K[j]) {
 
 // N8 [Transmit R_j] R_k <- R_j, k <- k + d
 // emit smaller key to output area
@@ -113,9 +113,10 @@ void Sort(const uint64_t N; int64_t K[2*N + 1], const uint64_t N)
 // increment if output is on left side, decrement if output is on right side
         k += d;
 
-// N9 [Stepdown?] j <- j - 1, To N3 if K_(j + 1) <= K_j
+// N9 [Stepdown?] j <- j - 1
         --j;
 
+// N9 [Stepdown?] To N3 if K_(j + 1) <= K_j
 // no stepdown in right run, continue comparing left and right runs
         if(K[j + 1] <= K[j]) {
           continue;
@@ -131,9 +132,11 @@ void Sort(const uint64_t N; int64_t K[2*N + 1], const uint64_t N)
 
 // N11 [Stepdown?] i <- i + 1
           ++i;
+
+// N11 [Stepdown?] To N10 if K_(i - 1) <= K_i
         } while(K[i - 1] <= K[i]);
 
-// N12 [Switch sides] To N3, f <- 0, d <- -d, k <-> l
+// N12 [Switch sides] f <- 0, d <- -d, k <-> l
 // left run is done, continue to compare next run on the left with run on the right
 // switch output side, swap current and previous output side pointers
         f = 0;
@@ -142,48 +145,56 @@ void Sort(const uint64_t N; int64_t K[2*N + 1], const uint64_t N)
         k = l;
         l = tmp;
 
-      }
+// N12 [Switch sides] To N3
 
-// N3 [Compare K_i:K_j] To N13 if i = j, R_k <- R_i
+      } else if(i == j) {
+
+// N3 [Compare K_i:K_j] R_k <- R_i if i = j
 // one area i.e. complete array has been processed since left and right run pointers crossed
-      if(i == j) {
         K[k] = K[i];
+
+// N3 [Compare K_i:K_j] To N13 if i = j
         break;
-      }
+
+      } else {
 
 // N4 [Transmit R_i] R_k <- R_i, k <- k + d
 // got smaller key from left run
-      K[k] = K[i];
-      k += d;
+        K[k] = K[i];
+        k += d;
 
 // N5 [Stepdown?] i <- i + 1
-      ++i;
+        ++i;
 
 // N5 [Stepdown?] To N3 if K_(i - 1) <= K_i
 // no stepdown in left run, continue comparing left and right runs
-      if(K[i - 1] <= K[i]) {
-        continue;
-      }
+        if(K[i - 1] <= K[i])
+          continue;
 
 // got stepdown in left run
 // output complete right run
-      do {
+        do {
 // N6 [Transmit R_j]
-        K[k] = K[j];
-        k += d;
+          K[k] = K[j];
+          k += d;
 
 // N7 [Stepdown?] j <- j - 1
-        --j;
-      } while(K[j + 1] <= K[j]);
+          --j;
 
-// N12 [Switch sides] To N3, f <- 0, d <- -d, k <-> l
+// N7 [Stepdown?] To N6 if K_(j + 1) <= K_j
+        } while(K[j + 1] <= K[j]);
+
+// N12 [Switch sides] f <- 0, d <- -d, k <-> l
 // right run is done, continue to compare next run on the right with run on the left
 // switch output side, swap current and previous output side pointers
-      f = 0;
-      d = -d;
-      uint64_t tmp = k;
-      k = l;
-      l = tmp;
+        f = 0;
+        d = -d;
+        uint64_t tmp = k;
+        k = l;
+        l = tmp;
+
+// N12 [Switch sides] To N3
+      }
 
     }
 
