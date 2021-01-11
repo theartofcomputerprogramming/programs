@@ -14,7 +14,7 @@ function usage {
   echo "texttobinary.sh -d < <(echo -e \"9, 2, 3, -7\n-5 100 1024\")"
   echo "\x09\x00\x00\x00\x02\x00\x00\x00\x03\x00\x00\x00\xf9\xff\xff\xff\xfb\xff\xff\xff\x64\x00\x00\x00\x00\x04\x00\x00"
   echo
-  echo "echo \"9, 2, 3, -7\n-5 100 1024\" | texttobinary.sh | od -An -td4 -w4 -v"
+  echo "echo -e \"9, 2, 3, -7\n-5 100 1024\" | texttobinary.sh | od -An -td4 -w4 -v"
 }
 
 while getopts "de:hw:" opt; do
