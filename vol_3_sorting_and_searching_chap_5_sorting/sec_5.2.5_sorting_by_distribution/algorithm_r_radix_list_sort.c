@@ -136,7 +136,7 @@ struct Record* Sort(const uint64_t N; struct Record R[N + 1], const uint64_t N, 
 
 // R3 [Extract kth digit of key] i <- kth least significant digit of key
 // this assumes base 256 following the mmix implementation, may generalize later
-      const uint8_t i = ((const uint8_t*)&P->KEY)[k - 1];
+      const uint8_t i = (P->KEY >> (8 * (k - 1))) & 0xffu;
 
 // R4 [Adjust links] LINK(TOP[i] <- P, TOP[i] <- P
 // note TOP[i] is BOTM[i] when queue is empty
@@ -145,7 +145,7 @@ struct Record* Sort(const uint64_t N; struct Record R[N + 1], const uint64_t N, 
       TOP[i] = P;
 
 // R5 [Step to next record] P <- LOC(R_(j - 1) if k = 1 and P = LOC(R_j) for j != 1
-      if(k == 1 && P != NULL) {
+      if(k == 1) {
         ptrdiff_t j = P - R;
         if(j != 1) {
           P = &R[j - 1];
