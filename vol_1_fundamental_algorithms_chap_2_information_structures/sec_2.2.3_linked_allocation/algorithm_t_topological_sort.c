@@ -1,39 +1,96 @@
 // algorithm_t_topological_sort.c
 
+////////////////////////////////////////////////////////////////////////
+// MIT License
+//
+// Copyright (c) 2020-2022 Zartaj Majeed
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+////////////////////////////////////////////////////////////////////////
+
 // Algorithm T (Topological sort), 2.2.3 Linked Allocation,
 // The Art of Computer Programming, Donald Knuth
 
 // Program T (Topological sort), 2.2.3 Linked Allocation,
 // The MMIX Supplement, Martin Ruckert
 
-// usage: algorithm_t_topological_sort <in.dat >out.dat
-// reads sequence of pairs of binary uint32_t values from in.dat
-// each pair is a dependency relation between objects
-// first of each pair is predecessor, second is successor
-// first pair is special: first value is 0, second is objects count
-// last pair is special: both values are 0
-// output is binary uint32_t values in topologically sorted order
-// examples:
-// algorithm_t_topological_sort <in.0.le.dat | od -An -td4 -w4 -v
+// basic idea is to have an array Base of n objects
+// each object contains info about its predecessors and successors
+// an object has a linked list TOP of its successors
+// an object has a count COUNT of its predecessors
+// as each relation is read, the predecessors count of the successor is inncremented
+// and the successor is prepended to the linked list of successors for the predecessors
+// once all relations are processed, the array entries with 0 counts are the ones to start with
+// so a queue QLINK with head QLINK[0] is created by reusing the COUNT fields of the objects
+// this works because only objects with COUNT 0 are added to the queue ie COUNT is no longer needed
+// the queue is populated with a first pass through the array adding the objects with no predecessors, here the array is traversed backwards but it can be done forwards too
+// then the queue is processed
+// an object is popped, its successor list is traversed, each successor has its predecessors count decremented, if the count goes to zero, the successor is added to the queue
+// when object 0 is popped from the queue it means the queue was empty because the 0 is coming from the underlying COUNT value that turned 0 and was not overwritten with an object index when an object is added to the queue
+// a counter N is also kept while processing the queue to insure all objects have been output, if the counter does not reach 0 it means there was a loop in the dependency relations otherwise it was a successful topological sort
 
-
+#include <stdint.h>
 #include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
+static void usage(void)
+{
+  puts("usage: algorithm_t_topological_sort <in.dat >out.dat");
+  puts("Implements Algorithm T (Topological sort) from 2.2.3 Linked Allocation, The Art of Computer Programming Volume 1, Fundamental Algorithms by Donald Knuth");
+  puts("Input and output is binary compatible with Program T (Topological sort) from 2.2.3 Linked Allocation, The MMIX Supplement by Martin Ruckert");
+  puts("");
+  puts("Reads sequence of pairs of binary uint32_t values on stdin");
+  puts("Each pair is a dependency relation between objects");
+  puts("First of each pair is predecessor, second is successor");
+  puts("First pair is special: first value is 0, second is objects count");
+  puts("Last pair is special: both values are 0");
+  puts("Output on stdout is binary uint32_t values in topologically sorted order");
+  puts("");
+  puts("Examples:");
+  puts("algorithm_t_topological_sort <in.0.le.dat | od -An -td4 -w4 -v");
+}
+
+// Pair represents input predecessor-successor relation between objects
 struct Pair {
+// left is left of pair, index of predecessor object
   uint32_t left;
+// right is right of pair, index of successor object
   uint32_t right;
 };
 
+// Object represents a single object with info about its predecessors and successors
+// Object is an entry in an array
 struct Object {
+// COUNT is number of direct predecessors of object k
   uint32_t COUNT;
+// TOP is link to list of direct successors of object k
   uint32_t TOP;
 };
 
+// Successor has info about a single successor of an object
+// Successor is a node in a linked list
 struct Successor {
+// SUC is index of a direct successor of object k
   uint32_t SUC;
+// NEXT is link to next item in successors list
   uint32_t NEXT;
 };
 
@@ -126,7 +183,9 @@ int TSort(FILE* Fin, FILE* Fout)
 
 // reuse input buffer for output
   uint32_t* OutBuf = (void*)Buffer;
-  uint32_t outcap = sizeof(Buffer)/sizeof(*OutBuf);
+// parentheses around sizeof in denominator suppress warning about
+// mismatched types of Buffer and OutBuf
+  uint32_t outcap = sizeof(Buffer)/(sizeof(*OutBuf));
 
 // track output buffer capacity
   uint32_t i = 0;
@@ -181,6 +240,12 @@ int TSort(FILE* Fin, FILE* Fout)
 
 int main(int argc, char* argv[])
 {
+  (void)argv;
+
+  if(argc > 1) {
+    usage();
+    return 1;
+  }
 
   if(TSort(stdin, stdout) != 0)
     return 1;

@@ -1,6 +1,6 @@
 # sec_2.2.3_linked_allocation/CMakeLists.txt
 
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.20)
 
 get_filename_component(COMPNAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 project(${COMPNAME})
@@ -14,7 +14,8 @@ if(CMAKE_C_COMPILER_ID MATCHES GNU)
 
 elseif(CMAKE_C_COMPILER_ID MATCHES MSVC)
 
-  target_compile_options(algorithm_t_topological_sort PRIVATE -Wall -WX -Od)
+# -wd5045 suppress warning C5045 for spectre mitigation
+  target_compile_options(algorithm_t_topological_sort PRIVATE -Wall -WX -Od -std:c17 -wd5045)
 
 elseif(CMAKE_C_COMPILER_ID MATCHES Clang)
 
