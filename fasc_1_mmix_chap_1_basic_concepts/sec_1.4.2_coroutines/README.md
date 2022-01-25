@@ -4,11 +4,11 @@ Knuth poses the decoding problem below and provides an MMIX program to explain c
 
 This directory contains three programs in C and C++ for the decoding problem.
 
-[**`inout_c.onefunc.c:`**](inout_c.onefunc.c) is a straightforward attempt in C to solve the decoding problem. It does not use coroutines. The entire program is essentially one function with one loop that reads input, decodes characters and prints output chracters as determined.
+[**`inout_c.onefunc.c`**](inout_c.onefunc.c) is a straightforward attempt in C to solve the decoding problem. It does not use coroutines. The entire program is essentially one function with one loop that reads input, decodes characters and prints output chracters as determined.
 
 Even in such a short and simple program, one can see multiple kinds of processing all mixed in with each other.
 
-[**`inout_c.coroutinestruct.c:`**](inout_c.coroutinestruct.c) is a C program with a coroutine-based design. There is no coroutine support in C. Instead this program simulates coroutines with a custom data type and a big switch containing all the states where the coroutines transfer control among each other.
+[**`inout_c.coroutinestruct.c`**](inout_c.coroutinestruct.c) is a C program with a coroutine-based design. There is no coroutine support in C. Instead this program simulates coroutines with a custom data type and a big switch containing all the states where the coroutines transfer control among each other.
 
 Unlike other descriptions of how to support coroutines in C, this approach does not rely on `setjmp` or `longjmp`. It does not manipulate the call stack with functions like `getcontext` and `savecontext` whose use is no longer encouraged. It does not make use of obscure techniques similar to Duff's device.
 
@@ -16,7 +16,7 @@ The data structure representing coroutines and their control is based on `corout
 
 This C implementation of coroutines is instructive for understanding what is involved in making two loosely-coupled functions successfully collaborate to solve a problem.
 
-[**`inout_cplusplus.cpp:`**](inout_cplusplus.cpp) is a C++ program that uses C++20 coroutines to implement Knuth's solution.
+[**`inout_cplusplus.cpp`**](inout_cplusplus.cpp) is a C++ program that uses C++20 coroutines to implement Knuth's solution.
 
 ## The decoding problem (Fascicle 1 MMIX, TAOCP, p.67)
 
