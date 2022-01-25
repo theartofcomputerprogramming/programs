@@ -1,5 +1,21 @@
 # Section 1.4.2' Coroutines
 
+Knuth poses the decoding problem below and provides an MMIX program to explain coroutines. The MMIX program is available at https://github.com/theartofcomputerprogramming/mmixsamples/blob/master/inout.mms
+
+This directory contains three programs in C and C++ for the decoding problem.
+
+`inout_c.onefunc.c` is a straightforward attempt in C to solve the decoding problem. It does not use coroutines. The entire program is essentially one function with one loop that reads input, decodes characters and prints output chracters as determined.
+
+Even in such a short and simple program, one can see multiple kinds of processing all mixed in with each other.
+
+`inout_c.coroutinestruct.c` is a C program that uses a coroutine-based design. There is no coroutine support in C. This program instead simulates coroutines with a custom data type and a big switch containing all the states where the coroutines transfer control to each other.
+
+The data structure representing coroutines and their control is based on `coroutine_struct` from `mmix-pipe.w` - the instruction pipeline component of the MMIX simulator written by Knuth.
+
+This C version of coroutines is instructive for understanding what is involved in making two loosely-coupled functions successfully collaborate to solve a problem.
+
+`inout_cplusplus.cpp` is a C++ program that uses C++20 coroutines to implement Knuth's solution.
+
 ## The decoding problem
 
 In order to study coroutines in action, let us consider a contrived example. Suppose we want to write a program that translates one code into another. The input code to be translated is a sequence of 8-bit characters terminated by a period, such as
@@ -26,4 +42,4 @@ Notice that 3426f does not mean 3427 repetitions of the letter f; it means 4 fou
 
 ## Test data
 
-Test data is in (data/inout)
+Test data is in [`data/inout`](data/inout)
