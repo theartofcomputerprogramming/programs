@@ -45,25 +45,33 @@ static void finishLine(char* line, uint64_t len)
 }
 
 // return next character from input stream
+// whitespace and control characters are skipped
 static char NextChar()
 {
+// process input stream in chunks of 100 bytes
   static char InBuf[100];
+
+// position of next character to process
   static char* inptr = InBuf;
   const char Period = '.';
   char inchar;
   
   for(;;) {
 
+// refill buffer if empty
     if(*inptr == '\0') {
       inptr = InBuf;
       if(fgets(InBuf, sizeof InBuf, stdin) == NULL)
+// set input terminator if no more input
         *inptr = Period;
     }
 
+// examine current character
     inchar = *inptr;
     ++inptr;
 
-    if(!isspace(inchar))
+// ignore whitespace and control characters in input
+    if(!isspace(inchar) && !iscntrl(inchar))
       break;
   }
 
@@ -199,6 +207,7 @@ InG In()
 // count has numeric value of digit character
 // get next character to repeat count times
     inchr = NextChar();
+
 // suspension point 3
     co_yield inchr;
 
@@ -213,7 +222,7 @@ InG In()
 }
 
 // takes In coroutine as parameter
-OutG Out(InG&& in)
+OutG Out(InG&& In)
 {
 // suspension point 0
 // not suspended by initial_suspend
@@ -221,46 +230,58 @@ OutG Out(InG&& in)
   char OutBuf[] = {0, 0, 0, ' ', 0, 0, 0, ' ', 0, 0, 0, ' ', 0, 0, 0, ' ', 0, 0, 0, ' ', 0, 0, 0, ' ', 0, 0, 0, ' ', 0, 0, 0, ' ', 0, 0, 0, ' ', 0, 0, 0, ' ', 0, 0, 0, ' ', 0, 0, 0, ' ', 0, 0, 0, ' ', 0, 0, 0, ' ', 0, 0, 0, ' ', 0, 0, 0, '\n', 0};
   char* outptr = OutBuf;
 
+// obtain a group of 3 characters, one at a time, from In coroutine
+// terminate each group with space
+// emit lines of 16 groups, terminating 16th group with newline
+// terminate output with period
   for(;;) {
 
+// get first character of group of 3
 // suspension point 1
 // not suspended
 // waits synchronously for result
-    char outchr = co_await in;
+    char outchr = co_await In;
 
     outptr[0] = outchr;
+// no more input, emit last line
     if(outchr == '.') {
       finishLine(OutBuf, (uint64_t)(outptr + 3 - OutBuf));
-      fprintf(stderr, "Out2: done OutBuf \"%s\"\n", OutBuf);
       break;
     }
 
+// get second character of group of 3
 // suspension point 2
-    outchr = co_await in;
+    outchr = co_await In;
 
     outptr[1] = outchr;
+// no more input, emit last line
     if(outchr == '.') {
       ++outptr;
       finishLine(OutBuf, (uint64_t)(outptr + 3 - OutBuf));
       break;
     }
 
+// get third character of group of 3
 // suspension point 3
-    outchr = co_await in;
+    outchr = co_await In;
 
     outptr[2] = outchr;
+// no more input, emit last line
     if(outchr == '.') {
       outptr += 2;
       finishLine(OutBuf, (uint64_t)(outptr + 3 - OutBuf));
       break;
     }
 
+// add group terminator character, space or newline
     outptr += 4;
 
+// keep going if line has room for another group
     if(outptr != OutBuf + sizeof(OutBuf) - 1) {
       continue;
     }
 
+// emit line full of 16 groups
     fputs(OutBuf, stdout);
     outptr = OutBuf;
 
