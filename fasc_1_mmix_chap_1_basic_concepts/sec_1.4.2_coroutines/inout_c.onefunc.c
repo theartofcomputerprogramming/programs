@@ -81,7 +81,8 @@ static void InNOut()
 
 // finish processing on input terminator
     if(inchar == Period) {
-      puts(".\n");
+      print_char(inchar, outCount);
+      puts("");
       break;
     }
 
